@@ -1,0 +1,13 @@
+{
+  "name": "photo-waterfall-site",
+  "version": "1.0.0",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.3",
+    "multer": "^2.2.0"
+  }
+}
