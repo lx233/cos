@@ -710,10 +710,10 @@ function renderPublicSite(images) {
   </header>
 
   <nav class="hero-links" aria-label="友情链接">
-    <a href="#">友情链接 1</a>
-    <a href="#">友情链接 2</a>
-    <a href="#">友情链接 3</a>
-    <span class="qq-slot">QQ 扩列：待填写</span>
+    <a href="https://calmdream.cn/">友情链接-宁梦</a>
+    <a href="https://lx233.github.io/">友情链接-香菇猫</a>
+    <!-- <a href="#">友情链接 3</a> -->
+    <span class="qq-slot">QQ 扩列：3223591937</span>
     <span class="copyright">copy right by 香菇</span>
   </nav>
 
