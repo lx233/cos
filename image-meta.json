@@ -2,14 +2,19 @@
   "version": 1,
   "bestByGroup": {},
   "weightByFile": {},
-  "externalImages": [
+  "externalImages": [],
+  "nextExternalId": 3,
+  "images": [
     {
-      "id": "ext:2",
-      "url": "http://photonjmaz.photo.store.qq.com/psc?/V53WL3q71uaAIc0rkuHP0zCGfJ3ul2uw/TmEUgtj9EK6.7V8ajmQrEHntLq2Zu5ybTZXO*9QLIKLRlzxvdcCqPIB9r4*vrqEGRiwMz6VWuWnkaREK2cLbQosrsxLTIlAQQEbW4wEC0*I!/b&bo=QAYcC9wIwA8HB2w!&rf=viewer_4&t=5",
-      "category": "1",
+      "id": "香菇_2026-06_大道寺知世_001.png",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png",
+      "localSrc": "/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png",
+      "fileName": "香菇_2026-06_大道寺知世_001.png",
+      "category": "香菇",
       "month": "2026-06",
-      "role": "1"
+      "date": "2026-06",
+      "role": "大道寺知世"
     }
   ],
-  "nextExternalId": 3
+  "migratedToImageList": true
 }

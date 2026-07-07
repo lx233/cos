@@ -6,9 +6,10 @@ const https = require('https');
 const http = require('http');
 
 const app = express();
-const PORT = process.env.PORT || 3010;
+const PORT = process.env.PORT || 3012;
 const ROOT_DIR = __dirname;
-const IMAGES_DIR = path.join(ROOT_DIR, 'images');
+const IMAGES_DIR = path.resolve(ROOT_DIR, '..', 'images');
+const IMAGE_SRC_PREFIX = normalizeImageSrcPrefix(process.env.IMAGE_SRC_PREFIX || 'https://cdn.jsdelivr.net/gh/lx233/cos-album@main/');
 const INDEX_FILE = path.join(ROOT_DIR, 'index.html');
 const META_FILE = path.join(ROOT_DIR, 'image-meta.json');
 const DEFAULT_WEIGHT = 100;
@@ -16,8 +17,8 @@ const MIN_WEIGHT = 0;
 const MAX_WEIGHT = 999;
 const SHUFFLE_NOISE = 30;
 const ADMIN_QUESTION = '香菇猫的 QQ 号前 4 位是多少？';
-const ADMIN_ANSWER = '3018';
-const ADMIN_TOKEN = '3018-' + require('crypto').createHash('sha256').update('shanggu-admin-secret').digest('hex').slice(0, 16);
+const ADMIN_ANSWER = '3108';
+const ADMIN_TOKEN = '3108-' + require('crypto').createHash('sha256').update('shanggu-admin-secret').digest('hex').slice(0, 16);
 const imageExtensions = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif', '.avif']);
 
 fs.mkdirSync(IMAGES_DIR, { recursive: true });
@@ -57,6 +58,22 @@ function normalizeWeight(value) {
   return Math.max(MIN_WEIGHT, Math.min(MAX_WEIGHT, Math.round(weight)));
 }
 
+function normalizeImageSrcPrefix(value) {
+  const prefix = String(value || '/images/').trim() || '/images/';
+  if (/^[a-z][a-z\d+.-]*:\/\//i.test(prefix) || prefix.startsWith('//')) {
+    return prefix.endsWith('/') ? prefix : prefix + '/';
+  }
+  return '/' + prefix.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+}
+
+function getImageSrc(fileName) {
+  return IMAGE_SRC_PREFIX + encodeURIComponent(fileName);
+}
+
+function getLocalImageSrc(fileName) {
+  return '/images/' + encodeURIComponent(fileName);
+}
+
 function readMetadata() {
   const base = { version: 1, bestByGroup: {}, weightByFile: {}, externalImages: [], nextExternalId: 1 };
   if (!fs.existsSync(META_FILE)) return base;
@@ -68,27 +85,63 @@ function writeMetadata(meta) {
   fs.writeFileSync(META_FILE, `${JSON.stringify(meta, null, 2)}\n`);
 }
 
+function migrateMetadataImages() {
+  const meta = readMetadata();
+  if (!Array.isArray(meta.images)) {
+    const existing = new Set();
+    meta.images = [];
+    for (const item of listImages()) {
+      meta.images.push(item);
+      existing.add(item.fileName);
+    }
+    for (const item of meta.externalImages || []) {
+      if (existing.has(item.id)) continue;
+      meta.images.push({
+        id: item.id,
+        src: item.url,
+        url: item.url,
+        fileName: item.url,
+        category: item.category,
+        month: item.month,
+        date: item.month,
+        role: item.role
+      });
+    }
+  }
+  meta.images = normalizeMetaImages(meta);
+  meta.externalImages = [];
+  meta.migratedToImageList = true;
+  writeMetadata(meta);
+  return meta;
+}
+
 function getGroupKey(image) {
   return JSON.stringify([image.category, image.month, image.role]);
 }
 
-function listExternalImages(meta = readMetadata()) {
-  return (meta.externalImages || []).map((item) => ({
-    id: item.id,
-    kind: 'external',
-    src: item.url,
-    url: item.url,
-    fileName: item.url,
-    category: item.category,
-    month: item.month,
-    date: item.month,
-    role: item.role
-  }));
+function normalizeMetaImages(meta) {
+  const images = Array.isArray(meta.images) ? meta.images : (meta.externalImages || []);
+  return images.map((item) => {
+    const fileName = item.fileName || item.url || item.id;
+    const isRemote = /^https?:\/\//i.test(fileName) || /^https?:\/\//i.test(item.src || '');
+    const normalized = {
+      ...item,
+      id: item.id || fileName,
+      src: item.src || item.url || (isRemote ? fileName : getImageSrc(fileName)),
+      fileName,
+      category: item.category || '其他',
+      month: item.month || item.date || '未知月份',
+      date: item.date || item.month || '未知月份',
+      role: item.role || '未分类角色'
+    };
+    delete normalized.kind;
+    if (!isRemote) normalized.localSrc = item.localSrc || getLocalImageSrc(fileName);
+    return normalized;
+  });
 }
 
 function getAllImages(meta = readMetadata()) {
-  const local = listImages().map((item) => ({ ...item, id: item.fileName, kind: 'local' }));
-  return [...local, ...listExternalImages(meta)];
+  return normalizeMetaImages(meta);
 }
 
 function enrichImagesWithMetadata(images, meta = readMetadata()) {
@@ -144,14 +197,17 @@ function parseImageName(fileName) {
   return { category, date: month, month, role };
 }
 
-function listImages() {
+function listImages(options = {}) {
+  const localSrc = options.localSrc === true;
   return fs.readdirSync(IMAGES_DIR)
     .filter((fileName) => imageExtensions.has(path.extname(fileName).toLowerCase()))
     .sort((a, b) => a.localeCompare(b, 'zh-Hans-CN'))
     .map((fileName) => {
       const parsed = parseImageName(fileName);
+      const localImageSrc = getLocalImageSrc(fileName);
       return {
-        src: `images/${encodeURIComponent(fileName)}`,
+        src: localSrc ? localImageSrc : getImageSrc(fileName),
+        localSrc: localImageSrc,
         fileName,
         ...parsed
       };
@@ -238,7 +294,8 @@ function extFromUrl(url, contentType) {
 }
 
 function renderPublicSite(images) {
-  const data = JSON.stringify(images).replace(/</g, '\\u003c');
+  const publicImages = images.map((image) => image.localSrc ? { ...image, fallbackSrc: image.localSrc } : image);
+  const data = JSON.stringify(publicImages).replace(/</g, '\\u003c');
   return `<!doctype html>
 <html lang="zh-CN" data-theme="dark">
 <head>
@@ -884,6 +941,11 @@ function renderPublicSite(images) {
         const image = document.createElement('img');
         image.loading = 'lazy';
         image.src = item.src;
+        if (item.fallbackSrc) {
+          image.addEventListener('error', () => {
+            if (image.src !== new URL(item.fallbackSrc, window.location.href).href) image.src = item.fallbackSrc;
+          }, { once: true });
+        }
         image.alt = item.fileName;
 
         const meta = document.createElement('div');
@@ -906,6 +968,10 @@ function renderPublicSite(images) {
       if (!visibleImages.length) return;
       currentLightboxIndex = (index + visibleImages.length) % visibleImages.length;
       const item = visibleImages[currentLightboxIndex];
+      lightboxImage.onerror = item.fallbackSrc ? () => {
+        lightboxImage.onerror = null;
+        lightboxImage.src = item.fallbackSrc;
+      } : null;
       lightboxImage.src = item.src;
       lightboxImage.alt = item.fileName;
       lightboxRole.textContent = item.role;
@@ -987,7 +1053,7 @@ function renderPublicSite(images) {
 
 function renderAdminPage() {
   const photographerCounts = new Map();
-  for (const image of listImages()) {
+  for (const image of getAllImages(readMetadata())) {
     photographerCounts.set(image.category, (photographerCounts.get(image.category) || 0) + 1);
   }
   const photographerOptions = Array.from(photographerCounts.entries())
@@ -1380,6 +1446,11 @@ ${photographerOptions}
           card.className = 'thumb-card';
           const img = document.createElement('img');
           img.src = item.src;
+          if (item.localSrc) {
+            img.addEventListener('error', () => {
+              if (img.src !== new URL(item.localSrc, window.location.href).href) img.src = item.localSrc;
+            }, { once: true });
+          }
           img.alt = item.fileName;
           if (item.isBest) {
             const bestTag = document.createElement('div');
@@ -1634,7 +1705,8 @@ app.get('/admin', (req, res) => {
 });
 
 app.get('/api/images', requireAuth, (req, res) => {
-  const images = getEnrichedImages();
+  const meta = readMetadata();
+  const images = enrichImagesWithMetadata(getAllImages(meta), meta);
   res.json({ images, groups: groupImages(images) });
 });
 
@@ -1703,11 +1775,8 @@ app.delete('/api/image', requireAuth, (req, res) => {
     res.status(404).json({ error: '图片不存在。' });
     return;
   }
-  if (image.kind === 'external') {
-    meta.externalImages = (meta.externalImages || []).filter((item) => item.id !== image.id);
-  } else {
-    fs.unlinkSync(path.join(IMAGES_DIR, image.fileName));
-  }
+  meta.images = normalizeMetaImages(meta).filter((item) => (item.id || item.fileName || item.url) !== image.id);
+  meta.externalImages = (meta.externalImages || []).filter((item) => item.id !== image.id);
   const groupKey = getGroupKey(image);
   if (meta.bestByGroup[groupKey] === image.id) delete meta.bestByGroup[groupKey];
   delete meta.weightByFile[image.id];
@@ -1731,27 +1800,17 @@ app.patch('/api/image', requireAuth, (req, res) => {
   const newGroupKey = getGroupKey({ category, month, role });
   const wasBest = meta.bestByGroup[oldGroupKey] === image.id;
 
-  if (image.kind === 'external') {
-    const entry = (meta.externalImages || []).find((item) => item.id === image.id);
-    if (entry) { entry.category = category; entry.month = month; entry.role = role; }
-    if (wasBest) { delete meta.bestByGroup[oldGroupKey]; meta.bestByGroup[newGroupKey] = image.id; }
-    writeMetadata(meta);
-    generateSite();
-    res.json({ ok: true, id: image.id });
-    return;
-  }
-
-  const ext = path.extname(image.fileName).toLowerCase();
-  const newFileName = nextFileName(category, month, role, ext);
-  fs.renameSync(path.join(IMAGES_DIR, image.fileName), path.join(IMAGES_DIR, newFileName));
-  if (wasBest) { delete meta.bestByGroup[oldGroupKey]; meta.bestByGroup[newGroupKey] = newFileName; }
-  if (meta.weightByFile[image.fileName] !== undefined) {
-    meta.weightByFile[newFileName] = meta.weightByFile[image.fileName];
-    delete meta.weightByFile[image.fileName];
-  }
+  meta.images = normalizeMetaImages(meta).map((item) => {
+    const itemId = item.id || item.fileName || item.url;
+    if (itemId !== image.id) return item;
+    return { ...item, category, month, date: month, role };
+  });
+  const entry = (meta.externalImages || []).find((item) => item.id === image.id);
+  if (entry) { entry.category = category; entry.month = month; entry.role = role; }
+  if (wasBest) { delete meta.bestByGroup[oldGroupKey]; meta.bestByGroup[newGroupKey] = image.id; }
   writeMetadata(meta);
   generateSite();
-  res.json({ ok: true, id: newFileName });
+  res.json({ ok: true, id: image.id });
 });
 
 app.post('/api/upload', requireAuth, upload.array('photos'), async (req, res) => {
@@ -1768,31 +1827,41 @@ app.post('/api/upload', requireAuth, upload.array('photos'), async (req, res) =>
   const saved = [];
   const errors = [];
 
+  const meta = readMetadata();
+  meta.images = normalizeMetaImages(meta);
+  meta.externalImages = [];
+  if (!Number.isInteger(meta.nextExternalId)) meta.nextExternalId = 1;
+
   for (const file of files) {
     const ext = path.extname(file.originalname).toLowerCase();
     const fileName = nextFileName(category, month, role, ext);
     fs.writeFileSync(path.join(IMAGES_DIR, fileName), file.buffer);
+    meta.images.push({
+      id: fileName,
+      src: getImageSrc(fileName),
+      localSrc: getLocalImageSrc(fileName),
+      fileName,
+      category,
+      month,
+      date: month,
+      role
+    });
     saved.push(fileName);
   }
 
-  if (urls.length) {
-    const meta = readMetadata();
-    if (!Array.isArray(meta.externalImages)) meta.externalImages = [];
-    if (!Number.isInteger(meta.nextExternalId)) meta.nextExternalId = 1;
-    for (const url of urls) {
-      try {
-        // eslint-disable-next-line no-new
-        new URL(url);
-      } catch (error) {
-        errors.push('无效的 URL：' + url);
-        continue;
-      }
-      const id = 'ext:' + (meta.nextExternalId++);
-      meta.externalImages.push({ id, url, category, month, role });
-      saved.push(url);
+  for (const url of urls) {
+    try {
+      // eslint-disable-next-line no-new
+      new URL(url);
+    } catch (error) {
+      errors.push('无效的 URL：' + url);
+      continue;
     }
-    writeMetadata(meta);
+    const id = 'ext:' + (meta.nextExternalId++);
+    meta.images.push({ id, src: url, url, fileName: url, category, month, date: month, role });
+    saved.push(url);
   }
+  writeMetadata(meta);
 
   if (!saved.length) {
     res.status(400).json({ error: errors.join('\n') || '没有成功导入的图片。' });
@@ -1803,6 +1872,7 @@ app.post('/api/upload', requireAuth, upload.array('photos'), async (req, res) =>
   res.json({ files: saved, errors });
 });
 
+migrateMetadataImages();
 generateSite();
 
 app.listen(PORT, () => {
