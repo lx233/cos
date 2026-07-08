@@ -74,6 +74,35 @@ function getLocalImageSrc(fileName) {
   return '/images/' + encodeURIComponent(fileName);
 }
 
+function candidateLocalFileNames(image) {
+  const candidates = [image.fileName, image.id];
+  for (const value of [image.localSrc, image.src]) {
+    if (!value || /^https?:\/\//i.test(value)) continue;
+    try {
+      candidates.push(path.basename(decodeURIComponent(new URL(value, 'http://local').pathname)));
+    } catch (error) {
+      candidates.push(path.basename(String(value)));
+    }
+  }
+  return Array.from(new Set(candidates.filter(Boolean)
+    .filter((fileName) => !/^https?:\/\//i.test(fileName))
+    .map((fileName) => {
+      try { return decodeURIComponent(fileName); } catch (error) { return fileName; }
+    })));
+}
+
+function deleteLocalImageIfExists(image) {
+  for (const fileName of candidateLocalFileNames(image)) {
+    const imagePath = path.resolve(IMAGES_DIR, fileName);
+    if (!imagePath.startsWith(IMAGES_DIR + path.sep)) continue;
+    if (fs.existsSync(imagePath)) {
+      fs.unlinkSync(imagePath);
+      return fileName;
+    }
+  }
+  return '';
+}
+
 function readMetadata() {
   const base = { version: 1, bestByGroup: {}, weightByFile: {}, externalImages: [], nextExternalId: 1 };
   if (!fs.existsSync(META_FILE)) return base;
@@ -475,6 +504,24 @@ function renderPublicSite(images) {
       text-transform: uppercase;
     }
 
+    .filter-toggle {
+      padding: 5px 8px;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .filter-toggle::after {
+      content: " 展开";
+      letter-spacing: 0;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .filter-group.open .filter-toggle::after { content: " 收起"; }
+
+    .filter-group.collapsed .chips { display: none; }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -536,14 +583,14 @@ function renderPublicSite(images) {
       margin: 0 auto;
       padding: 0 22px 92px;
       columns: 4 240px;
-      column-gap: 18px;
+      column-gap: 12px;
     }
 
     .photo-card {
       position: relative;
       display: inline-block;
       width: 100%;
-      margin: 0 0 18px;
+      margin: 0 0 12px;
       overflow: hidden;
       break-inside: avoid;
       border: 0;
@@ -553,6 +600,16 @@ function renderPublicSite(images) {
       cursor: zoom-in;
       isolation: isolate;
       transition: transform 320ms ease, box-shadow 320ms ease;
+    }
+
+    .photo-card.is-landscape {
+      width: 100%;
+    }
+
+    .photo-card.is-portrait {
+      width: 78%;
+      margin-left: 11%;
+      margin-right: 11%;
     }
 
     .photo-card:hover {
@@ -576,6 +633,11 @@ function renderPublicSite(images) {
       height: auto;
       filter: saturate(0.96) contrast(1.04);
       transition: transform 320ms ease, filter 320ms ease;
+    }
+
+    .photo-card img {
+      aspect-ratio: auto;
+      object-fit: contain;
     }
 
     .photo-card:hover::after { opacity: 1; }
@@ -681,8 +743,10 @@ function renderPublicSite(images) {
       .filters { padding: 6px 14px; }
       .filter-group { grid-template-columns: auto auto; gap: 5px; }
       .filter-title { padding-top: 4px; }
-      .gallery { columns: 2; column-gap: 10px; padding: 0 14px 80px; }
-      .photo-card { border-radius: 16px; margin-bottom: 10px; }
+      .gallery { columns: 2; column-gap: 8px; padding: 0 14px 80px; }
+      .photo-card { border-radius: 16px; margin-bottom: 8px; }
+      .photo-card.is-landscape { width: 100%; }
+      .photo-card.is-portrait { width: 90%; margin-left: 5%; margin-right: 5%; }
       .meta { position: static; opacity: 1; transform: none; padding: 10px 11px 12px; background: var(--panel); }
       .meta strong { color: var(--text); font-size: 14px; }
       .meta span { color: var(--muted); font-size: 11px; }
@@ -691,8 +755,8 @@ function renderPublicSite(images) {
     }
 
     @media (max-width: 460px) {
-      .gallery { column-gap: 8px; padding: 0 10px 70px; }
-      .photo-card { margin-bottom: 8px; }
+      .gallery { column-gap: 6px; padding: 0 10px 70px; }
+      .photo-card { margin-bottom: 6px; }
     }
   </style>
 </head>
@@ -722,12 +786,12 @@ function renderPublicSite(images) {
       <div class="filter-title">摄影师</div>
       <div class="chips" id="categoryFilters"></div>
     </div>
-    <div class="filter-group">
-      <div class="filter-title">月份</div>
+    <div class="filter-group collapsed" id="monthFilterGroup">
+      <button type="button" class="filter-title filter-toggle" id="monthToggle">月份</button>
       <div class="chips" id="monthFilters"></div>
     </div>
-    <div class="filter-group">
-      <div class="filter-title">角色</div>
+    <div class="filter-group collapsed" id="roleFilterGroup">
+      <button type="button" class="filter-title filter-toggle" id="roleToggle">角色</button>
       <div class="chips" id="roleFilters"></div>
     </div>
     <label class="best-toggle">
@@ -762,6 +826,7 @@ function renderPublicSite(images) {
     const rainbowPraises = ['{name}的镜头有魔法，香菇都被拍得闪闪发光。', '{name}随手一拍都是高光时刻，香菇看了直冒泡。', '构图稳、氛围甜，香菇宣布{name}这组可以循环播放。', '{name}把香菇拍出了会发光的样子。', '{name}镜头里的香菇好看到像偷偷开了滤镜外挂。', '{name}这组直接封神，香菇看一眼就血压回升。', '{name}把光影拿捏得死死的，香菇当场原地转圈。', '{name}随手一拍都是壁纸级，香菇决定全部收藏。', '{name}的氛围感拉满，香菇怀疑镜头里住了个神仙。', '{name}每张都好看到犯规，香菇已经笑出了酒窝。', '{name}的调色温柔又高级，香菇直呼这是电影质感。', '{name}抓拍稳准狠，香菇的每个瞬间都被偷偷神化了。', '{name}的审美在线到离谱，香菇感动得想发锦旗。', '{name}快门一响，香菇的颜值直接原地起飞。', '{name}构图讲究、留白高级，香菇宣布这位是宝藏摄影。', '{name}就是香菇的专属造光师，随手都能出片。', '{name}一出手，香菇的每张照片都自带柔光。', '香菇怀疑{name}的相机里偷偷装了仙气。', '{name}的取景角度刁钻又高级，香菇服气。', '在{name}镜头下，香菇连呼吸都是上镜的。', '{name}总能抓住香菇最灵的那一瞬间。', '{name}的片子有故事感，香菇看一次心动一次。', '香菇宣布：{name}的图直接进收藏夹吃灰都舍不得。', '{name}把平平无奇的日子拍成了大片，香菇感动。', '{name}的色彩高级到犯规，香菇怀疑在看画展。'];
     const state = { category: '全部', month: '全部', role: '全部', bestOnly: false, shuffle: false };
     const soulSoups = ['慢慢来，喜欢的事值得多花一点时间。', '把日子拍成喜欢的样子，就是认真生活。', '光会找到愿意等待的人。', '收藏每一个当下，未来会谢谢现在的你。', '生活不必完美，但可以足够温柔。', '你认真对待的瞬间，都会在某天发光。', '走得慢一点没关系，记得抬头看看风景。', '热爱可抵岁月漫长。', '愿你眼里有光，镜头里有爱。', '平凡的日子，也藏着不动声色的浪漫。'];
+    const photographerOrder = new Map();
     let visibleImages = [];
     let currentLightboxIndex = -1;
     const pageTitle = document.getElementById('pageTitle');
@@ -769,6 +834,10 @@ function renderPublicSite(images) {
     const gallery = document.getElementById('gallery');
     const empty = document.getElementById('empty');
     const bestOnly = document.getElementById('bestOnly');
+    const monthFilterGroup = document.getElementById('monthFilterGroup');
+    const monthToggle = document.getElementById('monthToggle');
+    const roleFilterGroup = document.getElementById('roleFilterGroup');
+    const roleToggle = document.getElementById('roleToggle');
     const shuffleButton = document.getElementById('shuffleButton');
     const weightSortButton = document.getElementById('weightSortButton');
     const lightbox = document.getElementById('lightbox');
@@ -802,6 +871,15 @@ function renderPublicSite(images) {
     function getWeight(item) {
       const weight = Number(item.weight);
       return Number.isFinite(weight) ? weight : ${DEFAULT_WEIGHT};
+    }
+
+    function getImageOrientation(item) {
+      const width = Number(item.width || item.naturalWidth);
+      const height = Number(item.height || item.naturalHeight);
+      if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+        return width >= height ? 'landscape' : 'portrait';
+      }
+      return 'landscape';
     }
 
     function sortGalleryItems(items) {
@@ -859,7 +937,11 @@ function renderPublicSite(images) {
         for (const image of images) {
           if (image.category) counts.set(image.category, (counts.get(image.category) || 0) + 1);
         }
-        return ['全部', ...Array.from(counts.entries()).filter(([, count]) => count >= 3).map(([value]) => value).sort((a, b) => b.localeCompare(a, 'zh-Hans-CN'))];
+        const photographers = Array.from(counts.entries()).filter(([, count]) => count >= 3).map(([value]) => value);
+        for (const photographer of photographers) {
+          if (!photographerOrder.has(photographer)) photographerOrder.set(photographer, Math.random());
+        }
+        return ['全部', ...photographers.sort((a, b) => photographerOrder.get(a) - photographerOrder.get(b))];
       }
       return ['全部', ...Array.from(new Set(images.map((item) => item[key]).filter(Boolean))).sort((a, b) => b.localeCompare(a, 'zh-Hans-CN'))];
     }
@@ -920,6 +1002,7 @@ function renderPublicSite(images) {
       } else {
         params.delete('shuffle');
       }
+      params.delete('composition');
       const query = params.toString();
       window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : '') + window.location.hash);
     }
@@ -937,9 +1020,21 @@ function renderPublicSite(images) {
       empty.style.display = visibleImages.length ? 'none' : 'block';
       for (const item of visibleImages) {
         const card = document.createElement('article');
-        card.className = 'photo-card';
+        const syncCardOrientation = () => {
+          const orientation = getImageOrientation(item);
+          card.className = 'photo-card is-' + orientation;
+        };
+        syncCardOrientation();
         const image = document.createElement('img');
         image.loading = 'lazy';
+        image.addEventListener('load', () => {
+          const width = image.naturalWidth;
+          const height = image.naturalHeight;
+          if (!width || !height || (item.naturalWidth === width && item.naturalHeight === height)) return;
+          item.naturalWidth = width;
+          item.naturalHeight = height;
+          syncCardOrientation();
+        });
         image.src = item.src;
         if (item.fallbackSrc) {
           image.addEventListener('error', () => {
@@ -989,6 +1084,10 @@ function renderPublicSite(images) {
       renderFilters('categoryFilters', 'category');
       renderFilters('monthFilters', 'month');
       renderFilters('roleFilters', 'role');
+      if (state.month !== '全部') monthFilterGroup.classList.add('open');
+      if (state.role !== '全部') roleFilterGroup.classList.add('open');
+      monthFilterGroup.classList.toggle('collapsed', !monthFilterGroup.classList.contains('open'));
+      roleFilterGroup.classList.toggle('collapsed', !roleFilterGroup.classList.contains('open'));
       updateHeroCopy();
       updateSortButtons();
       renderGallery();
@@ -1009,6 +1108,16 @@ function renderPublicSite(images) {
     document.getElementById('nextLightbox').addEventListener('click', (event) => {
       event.stopPropagation();
       moveLightbox(1);
+    });
+
+    monthToggle.addEventListener('click', () => {
+      monthFilterGroup.classList.toggle('open');
+      monthFilterGroup.classList.toggle('collapsed', !monthFilterGroup.classList.contains('open'));
+    });
+
+    roleToggle.addEventListener('click', () => {
+      roleFilterGroup.classList.toggle('open');
+      roleFilterGroup.classList.toggle('collapsed', !roleFilterGroup.classList.contains('open'));
     });
 
     bestOnly.addEventListener('change', () => {
@@ -1777,12 +1886,13 @@ app.delete('/api/image', requireAuth, (req, res) => {
   }
   meta.images = normalizeMetaImages(meta).filter((item) => (item.id || item.fileName || item.url) !== image.id);
   meta.externalImages = (meta.externalImages || []).filter((item) => item.id !== image.id);
+  const deletedLocalFile = deleteLocalImageIfExists(image);
   const groupKey = getGroupKey(image);
   if (meta.bestByGroup[groupKey] === image.id) delete meta.bestByGroup[groupKey];
   delete meta.weightByFile[image.id];
   writeMetadata(meta);
   generateSite();
-  res.json({ ok: true, id: image.id });
+  res.json({ ok: true, id: image.id, deletedLocalFile });
 });
 
 app.patch('/api/image', requireAuth, (req, res) => {
@@ -1850,16 +1960,29 @@ app.post('/api/upload', requireAuth, upload.array('photos'), async (req, res) =>
   }
 
   for (const url of urls) {
+    let downloaded;
     try {
       // eslint-disable-next-line no-new
       new URL(url);
+      downloaded = await downloadImage(url);
     } catch (error) {
-      errors.push('无效的 URL：' + url);
+      errors.push((error && error.message) ? error.message : '下载失败：' + url);
       continue;
     }
-    const id = 'ext:' + (meta.nextExternalId++);
-    meta.images.push({ id, src: url, url, fileName: url, category, month, date: month, role });
-    saved.push(url);
+    const ext = extFromUrl(downloaded.url, downloaded.contentType);
+    const fileName = nextFileName(category, month, role, ext);
+    fs.writeFileSync(path.join(IMAGES_DIR, fileName), downloaded.buffer);
+    meta.images.push({
+      id: fileName,
+      src: getImageSrc(fileName),
+      localSrc: getLocalImageSrc(fileName),
+      fileName,
+      category,
+      month,
+      date: month,
+      role
+    });
+    saved.push(fileName);
   }
   writeMetadata(meta);
 

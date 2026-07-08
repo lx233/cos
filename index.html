@@ -177,6 +177,24 @@
       text-transform: uppercase;
     }
 
+    .filter-toggle {
+      padding: 5px 8px;
+      font-size: 9px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .filter-toggle::after {
+      content: " 展开";
+      letter-spacing: 0;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .filter-group.open .filter-toggle::after { content: " 收起"; }
+
+    .filter-group.collapsed .chips { display: none; }
+
     .chips {
       display: flex;
       flex-wrap: wrap;
@@ -238,14 +256,14 @@
       margin: 0 auto;
       padding: 0 22px 92px;
       columns: 4 240px;
-      column-gap: 18px;
+      column-gap: 12px;
     }
 
     .photo-card {
       position: relative;
       display: inline-block;
       width: 100%;
-      margin: 0 0 18px;
+      margin: 0 0 12px;
       overflow: hidden;
       break-inside: avoid;
       border: 0;
@@ -255,6 +273,16 @@
       cursor: zoom-in;
       isolation: isolate;
       transition: transform 320ms ease, box-shadow 320ms ease;
+    }
+
+    .photo-card.is-landscape {
+      width: 100%;
+    }
+
+    .photo-card.is-portrait {
+      width: 78%;
+      margin-left: 11%;
+      margin-right: 11%;
     }
 
     .photo-card:hover {
@@ -278,6 +306,11 @@
       height: auto;
       filter: saturate(0.96) contrast(1.04);
       transition: transform 320ms ease, filter 320ms ease;
+    }
+
+    .photo-card img {
+      aspect-ratio: auto;
+      object-fit: contain;
     }
 
     .photo-card:hover::after { opacity: 1; }
@@ -383,8 +416,10 @@
       .filters { padding: 6px 14px; }
       .filter-group { grid-template-columns: auto auto; gap: 5px; }
       .filter-title { padding-top: 4px; }
-      .gallery { columns: 2; column-gap: 10px; padding: 0 14px 80px; }
-      .photo-card { border-radius: 16px; margin-bottom: 10px; }
+      .gallery { columns: 2; column-gap: 8px; padding: 0 14px 80px; }
+      .photo-card { border-radius: 16px; margin-bottom: 8px; }
+      .photo-card.is-landscape { width: 100%; }
+      .photo-card.is-portrait { width: 90%; margin-left: 5%; margin-right: 5%; }
       .meta { position: static; opacity: 1; transform: none; padding: 10px 11px 12px; background: var(--panel); }
       .meta strong { color: var(--text); font-size: 14px; }
       .meta span { color: var(--muted); font-size: 11px; }
@@ -393,8 +428,8 @@
     }
 
     @media (max-width: 460px) {
-      .gallery { column-gap: 8px; padding: 0 10px 70px; }
-      .photo-card { margin-bottom: 8px; }
+      .gallery { column-gap: 6px; padding: 0 10px 70px; }
+      .photo-card { margin-bottom: 6px; }
     }
   </style>
 </head>
@@ -406,7 +441,7 @@
       <p class="subtitle" id="pageSubtitle">用更沉浸的瀑布流展示香菇出过的角色，按角色、摄影师或月份快速筛选。</p>
     </div>
     <div class="hero-card">
-      <strong>1</strong>
+      <strong>29</strong>
       <span>张已收录作品</span>
     </div>
   </header>
@@ -424,12 +459,12 @@
       <div class="filter-title">摄影师</div>
       <div class="chips" id="categoryFilters"></div>
     </div>
-    <div class="filter-group">
-      <div class="filter-title">月份</div>
+    <div class="filter-group collapsed" id="monthFilterGroup">
+      <button type="button" class="filter-title filter-toggle" id="monthToggle">月份</button>
       <div class="chips" id="monthFilters"></div>
     </div>
-    <div class="filter-group">
-      <div class="filter-title">角色</div>
+    <div class="filter-group collapsed" id="roleFilterGroup">
+      <button type="button" class="filter-title filter-toggle" id="roleToggle">角色</button>
       <div class="chips" id="roleFilters"></div>
     </div>
     <label class="best-toggle">
@@ -458,12 +493,13 @@
   </div>
 
   <script>
-    const images = [{"id":"香菇_2026-06_大道寺知世_001.png","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png","localSrc":"/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png","fileName":"香菇_2026-06_大道寺知世_001.png","category":"香菇","month":"2026-06","date":"2026-06","role":"大道寺知世","groupKey":"[\"香菇\",\"2026-06\",\"大道寺知世\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png"}];
+    const images = [{"id":"香菇_2026-06_大道寺知世_001.png","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png","localSrc":"/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png","fileName":"香菇_2026-06_大道寺知世_001.png","category":"香菇","month":"2025-10","date":"2025-10","role":"大道寺知世","groupKey":"[\"香菇\",\"2025-10\",\"大道寺知世\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png"},{"id":"X_2026-02_深水雏子_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.jpg","localSrc":"/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.jpg","fileName":"X_2026-02_深水雏子_001.jpg","category":"X","month":"2026-02","date":"2026-02","role":"深水雏子","groupKey":"[\"X\",\"2026-02\",\"深水雏子\"]","weight":100,"isBest":true,"fallbackSrc":"/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.jpg"},{"id":"X_2026-02_深水雏子_002.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_002.jpg","localSrc":"/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_002.jpg","fileName":"X_2026-02_深水雏子_002.jpg","category":"X","month":"2026-02","date":"2026-02","role":"深水雏子","groupKey":"[\"X\",\"2026-02\",\"深水雏子\"]","weight":100,"isBest":false,"fallbackSrc":"/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_002.jpg"},{"id":"Luc_2026-01_崩铁Saber_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/Luc_2026-01_%E5%B4%A9%E9%93%81Saber_001.jpg","localSrc":"/images/Luc_2026-01_%E5%B4%A9%E9%93%81Saber_001.jpg","fileName":"Luc_2026-01_崩铁Saber_001.jpg","category":"Luc","month":"2026-01","date":"2026-01","role":"崩铁Saber","groupKey":"[\"Luc\",\"2026-01\",\"崩铁Saber\"]","weight":100,"isBest":true,"fallbackSrc":"/images/Luc_2026-01_%E5%B4%A9%E9%93%81Saber_001.jpg"},{"id":"香菇_2026-02_初音未来_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-02_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.jpg","localSrc":"/images/%E9%A6%99%E8%8F%87_2026-02_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.jpg","fileName":"香菇_2026-02_初音未来_001.jpg","category":"香菇","month":"2026-02","date":"2026-02","role":"初音未来","groupKey":"[\"香菇\",\"2026-02\",\"初音未来\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E9%A6%99%E8%8F%87_2026-02_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.jpg"},{"id":"棍子_2026-02_兔子洞_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_001.jpg","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_001.jpg","fileName":"棍子_2026-02_兔子洞_001.jpg","category":"棍子","month":"2026-02","date":"2026-02","role":"兔子洞","groupKey":"[\"棍子\",\"2026-02\",\"兔子洞\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_001.jpg"},{"id":"棍子_2026-02_兔子洞_002.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_002.jpg","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_002.jpg","fileName":"棍子_2026-02_兔子洞_002.jpg","category":"棍子","month":"2026-02","date":"2026-02","role":"兔子洞","groupKey":"[\"棍子\",\"2026-02\",\"兔子洞\"]","weight":100,"isBest":false,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_002.jpg"},{"id":"棍子_2026-02_小埋_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%B0%8F%E5%9F%8B_001.jpg","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%B0%8F%E5%9F%8B_001.jpg","fileName":"棍子_2026-02_小埋_001.jpg","category":"棍子","month":"2026-02","date":"2026-02","role":"小埋","groupKey":"[\"棍子\",\"2026-02\",\"小埋\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%B0%8F%E5%9F%8B_001.jpg"},{"id":"人中白_2026-01_大黑塔_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E4%BA%BA%E4%B8%AD%E7%99%BD_2026-01_%E5%A4%A7%E9%BB%91%E5%A1%94_001.webp","localSrc":"/images/%E4%BA%BA%E4%B8%AD%E7%99%BD_2026-01_%E5%A4%A7%E9%BB%91%E5%A1%94_001.webp","fileName":"人中白_2026-01_大黑塔_001.webp","category":"人中白","month":"2026-01","date":"2026-01","role":"大黑塔","groupKey":"[\"人中白\",\"2026-01\",\"大黑塔\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E4%BA%BA%E4%B8%AD%E7%99%BD_2026-01_%E5%A4%A7%E9%BB%91%E5%A1%94_001.webp"},{"id":"棍子_2026-01_下江小春_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_001.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_001.webp","fileName":"棍子_2026-01_下江小春_001.webp","category":"棍子","month":"2026-01","date":"2026-01","role":"下江小春","groupKey":"[\"棍子\",\"2026-01\",\"下江小春\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_001.webp"},{"id":"棍子_2026-01_下江小春_002.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_002.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_002.webp","fileName":"棍子_2026-01_下江小春_002.webp","category":"棍子","month":"2026-01","date":"2026-01","role":"下江小春","groupKey":"[\"棍子\",\"2026-01\",\"下江小春\"]","weight":100,"isBest":false,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_002.webp"},{"id":"香菇_2026-01_小埋_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-01_%E5%B0%8F%E5%9F%8B_001.webp","localSrc":"/images/%E9%A6%99%E8%8F%87_2026-01_%E5%B0%8F%E5%9F%8B_001.webp","fileName":"香菇_2026-01_小埋_001.webp","category":"香菇","month":"2026-01","date":"2026-01","role":"小埋","groupKey":"[\"香菇\",\"2026-01\",\"小埋\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E9%A6%99%E8%8F%87_2026-01_%E5%B0%8F%E5%9F%8B_001.webp"},{"id":"喜多_2026-04_时雨羽衣_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E6%97%B6%E9%9B%A8%E7%BE%BD%E8%A1%A3_001.webp","localSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E6%97%B6%E9%9B%A8%E7%BE%BD%E8%A1%A3_001.webp","fileName":"喜多_2026-04_时雨羽衣_001.webp","category":"喜多","month":"2026-04","date":"2026-04","role":"时雨羽衣","groupKey":"[\"喜多\",\"2026-04\",\"时雨羽衣\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E6%97%B6%E9%9B%A8%E7%BE%BD%E8%A1%A3_001.webp"},{"id":"喜多_2026-04_姬野_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E5%A7%AC%E9%87%8E_001.webp","localSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%A7%AC%E9%87%8E_001.webp","fileName":"喜多_2026-04_姬野_001.webp","category":"喜多","month":"2026-04","date":"2026-04","role":"姬野","groupKey":"[\"喜多\",\"2026-04\",\"姬野\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%A7%AC%E9%87%8E_001.webp"},{"id":"棍子_2026-03_白兔_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-03_%E7%99%BD%E5%85%94_001.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-03_%E7%99%BD%E5%85%94_001.webp","fileName":"棍子_2026-03_白兔_001.webp","category":"棍子","month":"2026-03","date":"2026-03","role":"白兔","groupKey":"[\"棍子\",\"2026-03\",\"白兔\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-03_%E7%99%BD%E5%85%94_001.webp"},{"id":"喜多_2026-04_兔子洞_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp","localSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp","fileName":"喜多_2026-04_兔子洞_001.webp","category":"喜多","month":"2026-04","date":"2026-04","role":"兔子洞","groupKey":"[\"喜多\",\"2026-04\",\"兔子洞\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp"},{"id":"棍子_2025-12_橘望_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2025-12_%E6%A9%98%E6%9C%9B_001.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2025-12_%E6%A9%98%E6%9C%9B_001.webp","fileName":"棍子_2025-12_橘望_001.webp","category":"棍子","month":"2025-12","date":"2025-12","role":"橘望","groupKey":"[\"棍子\",\"2025-12\",\"橘望\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2025-12_%E6%A9%98%E6%9C%9B_001.webp"},{"id":"棍子_2025-10_丽塔_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2025-10_%E4%B8%BD%E5%A1%94_001.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2025-10_%E4%B8%BD%E5%A1%94_001.webp","fileName":"棍子_2025-10_丽塔_001.webp","category":"棍子","month":"2025-10","date":"2025-10","role":"丽塔","groupKey":"[\"棍子\",\"2025-10\",\"丽塔\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2025-10_%E4%B8%BD%E5%A1%94_001.webp"},{"id":"宁梦_2025-08_佐仓双叶_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-08_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp","localSrc":"/images/%E5%AE%81%E6%A2%A6_2025-08_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp","fileName":"宁梦_2025-08_佐仓双叶_001.webp","category":"宁梦","month":"2025-08","date":"2025-08","role":"佐仓双叶","groupKey":"[\"宁梦\",\"2025-08\",\"佐仓双叶\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%AE%81%E6%A2%A6_2025-08_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp"},{"id":"宁梦_2025-05_早柚_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-05_%E6%97%A9%E6%9F%9A_001.webp","localSrc":"/images/%E5%AE%81%E6%A2%A6_2025-05_%E6%97%A9%E6%9F%9A_001.webp","fileName":"宁梦_2025-05_早柚_001.webp","category":"宁梦","month":"2025-05","date":"2025-05","role":"早柚","groupKey":"[\"宁梦\",\"2025-05\",\"早柚\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%AE%81%E6%A2%A6_2025-05_%E6%97%A9%E6%9F%9A_001.webp"},{"id":"宁梦_2025-08_兔子洞_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-08_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp","localSrc":"/images/%E5%AE%81%E6%A2%A6_2025-08_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp","fileName":"宁梦_2025-08_兔子洞_001.webp","category":"宁梦","month":"2025-08","date":"2025-08","role":"兔子洞","groupKey":"[\"宁梦\",\"2025-08\",\"兔子洞\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%AE%81%E6%A2%A6_2025-08_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp"},{"id":"xxd_2026-05_佐仓双叶_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2026-05_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp","localSrc":"/images/xxd_2026-05_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp","fileName":"xxd_2026-05_佐仓双叶_001.webp","category":"xxd","month":"2025-05","date":"2025-05","role":"佐仓双叶","groupKey":"[\"xxd\",\"2025-05\",\"佐仓双叶\"]","weight":100,"isBest":true,"fallbackSrc":"/images/xxd_2026-05_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp"},{"id":"xxd_2026-05_早柚_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2026-05_%E6%97%A9%E6%9F%9A_001.webp","localSrc":"/images/xxd_2026-05_%E6%97%A9%E6%9F%9A_001.webp","fileName":"xxd_2026-05_早柚_001.webp","category":"xxd","month":"2025-05","date":"2025-05","role":"早柚","groupKey":"[\"xxd\",\"2025-05\",\"早柚\"]","weight":100,"isBest":true,"fallbackSrc":"/images/xxd_2026-05_%E6%97%A9%E6%9F%9A_001.webp"},{"id":"xxd_2025-03_MIO_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2025-03_MIO_001.webp","localSrc":"/images/xxd_2025-03_MIO_001.webp","fileName":"xxd_2025-03_MIO_001.webp","category":"xxd","month":"2025-03","date":"2025-03","role":"MIO","groupKey":"[\"xxd\",\"2025-03\",\"MIO\"]","weight":100,"isBest":true,"fallbackSrc":"/images/xxd_2025-03_MIO_001.webp"},{"id":"xxd_2025-07_初音未来_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2025-07_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.webp","localSrc":"/images/xxd_2025-07_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.webp","fileName":"xxd_2025-07_初音未来_001.webp","category":"xxd","month":"2025-07","date":"2025-07","role":"初音未来","groupKey":"[\"xxd\",\"2025-07\",\"初音未来\"]","weight":100,"isBest":true,"fallbackSrc":"/images/xxd_2025-07_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.webp"},{"id":"棍子_2026-07_飞鸟马时_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-07_%E9%A3%9E%E9%B8%9F%E9%A9%AC%E6%97%B6_001.jpg","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-07_%E9%A3%9E%E9%B8%9F%E9%A9%AC%E6%97%B6_001.jpg","fileName":"棍子_2026-07_飞鸟马时_001.jpg","category":"棍子","month":"2026-07","date":"2026-07","role":"飞鸟马时","groupKey":"[\"棍子\",\"2026-07\",\"飞鸟马时\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-07_%E9%A3%9E%E9%B8%9F%E9%A9%AC%E6%97%B6_001.jpg"},{"id":"棍子_2026-01_才羽桃井_001.jpg","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E6%89%8D%E7%BE%BD%E6%A1%83%E4%BA%95_001.jpg","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%89%8D%E7%BE%BD%E6%A1%83%E4%BA%95_001.jpg","fileName":"棍子_2026-01_才羽桃井_001.jpg","category":"棍子","month":"2026-01","date":"2026-01","role":"才羽桃井","groupKey":"[\"棍子\",\"2026-01\",\"才羽桃井\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%89%8D%E7%BE%BD%E6%A1%83%E4%BA%95_001.jpg"},{"id":"喜多_2026-02_深水雏子_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.webp","localSrc":"/images/%E5%96%9C%E5%A4%9A_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.webp","fileName":"喜多_2026-02_深水雏子_001.webp","category":"喜多","month":"2026-02","date":"2026-02","role":"深水雏子","groupKey":"[\"喜多\",\"2026-02\",\"深水雏子\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E5%96%9C%E5%A4%9A_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.webp"},{"id":"棍子_2026-01_橘望_001.webp","src":"https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E6%A9%98%E6%9C%9B_001.webp","localSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%A9%98%E6%9C%9B_001.webp","fileName":"棍子_2026-01_橘望_001.webp","category":"棍子","month":"2026-01","date":"2026-01","role":"橘望","groupKey":"[\"棍子\",\"2026-01\",\"橘望\"]","weight":100,"isBest":true,"fallbackSrc":"/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%A9%98%E6%9C%9B_001.webp"}];
     const filterKeys = ['category', 'month', 'role'];
     const urlParams = { category: 'photographer', month: 'month', role: 'role' };
     const rainbowPraises = ['{name}的镜头有魔法，香菇都被拍得闪闪发光。', '{name}随手一拍都是高光时刻，香菇看了直冒泡。', '构图稳、氛围甜，香菇宣布{name}这组可以循环播放。', '{name}把香菇拍出了会发光的样子。', '{name}镜头里的香菇好看到像偷偷开了滤镜外挂。', '{name}这组直接封神，香菇看一眼就血压回升。', '{name}把光影拿捏得死死的，香菇当场原地转圈。', '{name}随手一拍都是壁纸级，香菇决定全部收藏。', '{name}的氛围感拉满，香菇怀疑镜头里住了个神仙。', '{name}每张都好看到犯规，香菇已经笑出了酒窝。', '{name}的调色温柔又高级，香菇直呼这是电影质感。', '{name}抓拍稳准狠，香菇的每个瞬间都被偷偷神化了。', '{name}的审美在线到离谱，香菇感动得想发锦旗。', '{name}快门一响，香菇的颜值直接原地起飞。', '{name}构图讲究、留白高级，香菇宣布这位是宝藏摄影。', '{name}就是香菇的专属造光师，随手都能出片。', '{name}一出手，香菇的每张照片都自带柔光。', '香菇怀疑{name}的相机里偷偷装了仙气。', '{name}的取景角度刁钻又高级，香菇服气。', '在{name}镜头下，香菇连呼吸都是上镜的。', '{name}总能抓住香菇最灵的那一瞬间。', '{name}的片子有故事感，香菇看一次心动一次。', '香菇宣布：{name}的图直接进收藏夹吃灰都舍不得。', '{name}把平平无奇的日子拍成了大片，香菇感动。', '{name}的色彩高级到犯规，香菇怀疑在看画展。'];
     const state = { category: '全部', month: '全部', role: '全部', bestOnly: false, shuffle: false };
     const soulSoups = ['慢慢来，喜欢的事值得多花一点时间。', '把日子拍成喜欢的样子，就是认真生活。', '光会找到愿意等待的人。', '收藏每一个当下，未来会谢谢现在的你。', '生活不必完美，但可以足够温柔。', '你认真对待的瞬间，都会在某天发光。', '走得慢一点没关系，记得抬头看看风景。', '热爱可抵岁月漫长。', '愿你眼里有光，镜头里有爱。', '平凡的日子，也藏着不动声色的浪漫。'];
+    const photographerOrder = new Map();
     let visibleImages = [];
     let currentLightboxIndex = -1;
     const pageTitle = document.getElementById('pageTitle');
@@ -471,6 +507,10 @@
     const gallery = document.getElementById('gallery');
     const empty = document.getElementById('empty');
     const bestOnly = document.getElementById('bestOnly');
+    const monthFilterGroup = document.getElementById('monthFilterGroup');
+    const monthToggle = document.getElementById('monthToggle');
+    const roleFilterGroup = document.getElementById('roleFilterGroup');
+    const roleToggle = document.getElementById('roleToggle');
     const shuffleButton = document.getElementById('shuffleButton');
     const weightSortButton = document.getElementById('weightSortButton');
     const lightbox = document.getElementById('lightbox');
@@ -504,6 +544,15 @@
     function getWeight(item) {
       const weight = Number(item.weight);
       return Number.isFinite(weight) ? weight : 100;
+    }
+
+    function getImageOrientation(item) {
+      const width = Number(item.width || item.naturalWidth);
+      const height = Number(item.height || item.naturalHeight);
+      if (Number.isFinite(width) && Number.isFinite(height) && width > 0 && height > 0) {
+        return width >= height ? 'landscape' : 'portrait';
+      }
+      return 'landscape';
     }
 
     function sortGalleryItems(items) {
@@ -561,7 +610,11 @@
         for (const image of images) {
           if (image.category) counts.set(image.category, (counts.get(image.category) || 0) + 1);
         }
-        return ['全部', ...Array.from(counts.entries()).filter(([, count]) => count >= 3).map(([value]) => value).sort((a, b) => b.localeCompare(a, 'zh-Hans-CN'))];
+        const photographers = Array.from(counts.entries()).filter(([, count]) => count >= 3).map(([value]) => value);
+        for (const photographer of photographers) {
+          if (!photographerOrder.has(photographer)) photographerOrder.set(photographer, Math.random());
+        }
+        return ['全部', ...photographers.sort((a, b) => photographerOrder.get(a) - photographerOrder.get(b))];
       }
       return ['全部', ...Array.from(new Set(images.map((item) => item[key]).filter(Boolean))).sort((a, b) => b.localeCompare(a, 'zh-Hans-CN'))];
     }
@@ -622,6 +675,7 @@
       } else {
         params.delete('shuffle');
       }
+      params.delete('composition');
       const query = params.toString();
       window.history.replaceState(null, '', window.location.pathname + (query ? '?' + query : '') + window.location.hash);
     }
@@ -639,9 +693,21 @@
       empty.style.display = visibleImages.length ? 'none' : 'block';
       for (const item of visibleImages) {
         const card = document.createElement('article');
-        card.className = 'photo-card';
+        const syncCardOrientation = () => {
+          const orientation = getImageOrientation(item);
+          card.className = 'photo-card is-' + orientation;
+        };
+        syncCardOrientation();
         const image = document.createElement('img');
         image.loading = 'lazy';
+        image.addEventListener('load', () => {
+          const width = image.naturalWidth;
+          const height = image.naturalHeight;
+          if (!width || !height || (item.naturalWidth === width && item.naturalHeight === height)) return;
+          item.naturalWidth = width;
+          item.naturalHeight = height;
+          syncCardOrientation();
+        });
         image.src = item.src;
         if (item.fallbackSrc) {
           image.addEventListener('error', () => {
@@ -691,6 +757,10 @@
       renderFilters('categoryFilters', 'category');
       renderFilters('monthFilters', 'month');
       renderFilters('roleFilters', 'role');
+      if (state.month !== '全部') monthFilterGroup.classList.add('open');
+      if (state.role !== '全部') roleFilterGroup.classList.add('open');
+      monthFilterGroup.classList.toggle('collapsed', !monthFilterGroup.classList.contains('open'));
+      roleFilterGroup.classList.toggle('collapsed', !roleFilterGroup.classList.contains('open'));
       updateHeroCopy();
       updateSortButtons();
       renderGallery();
@@ -711,6 +781,16 @@
     document.getElementById('nextLightbox').addEventListener('click', (event) => {
       event.stopPropagation();
       moveLightbox(1);
+    });
+
+    monthToggle.addEventListener('click', () => {
+      monthFilterGroup.classList.toggle('open');
+      monthFilterGroup.classList.toggle('collapsed', !monthFilterGroup.classList.contains('open'));
+    });
+
+    roleToggle.addEventListener('click', () => {
+      roleFilterGroup.classList.toggle('open');
+      roleFilterGroup.classList.toggle('collapsed', !roleFilterGroup.classList.contains('open'));
     });
 
     bestOnly.addEventListener('change', () => {

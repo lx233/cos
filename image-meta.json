@@ -3,7 +3,7 @@
   "bestByGroup": {},
   "weightByFile": {},
   "externalImages": [],
-  "nextExternalId": 3,
+  "nextExternalId": 5,
   "images": [
     {
       "id": "香菇_2026-06_大道寺知世_001.png",
@@ -11,9 +11,289 @@
       "localSrc": "/images/%E9%A6%99%E8%8F%87_2026-06_%E5%A4%A7%E9%81%93%E5%AF%BA%E7%9F%A5%E4%B8%96_001.png",
       "fileName": "香菇_2026-06_大道寺知世_001.png",
       "category": "香菇",
-      "month": "2026-06",
-      "date": "2026-06",
+      "month": "2025-10",
+      "date": "2025-10",
       "role": "大道寺知世"
+    },
+    {
+      "id": "X_2026-02_深水雏子_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.jpg",
+      "localSrc": "/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.jpg",
+      "fileName": "X_2026-02_深水雏子_001.jpg",
+      "category": "X",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "深水雏子"
+    },
+    {
+      "id": "X_2026-02_深水雏子_002.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_002.jpg",
+      "localSrc": "/images/X_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_002.jpg",
+      "fileName": "X_2026-02_深水雏子_002.jpg",
+      "category": "X",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "深水雏子"
+    },
+    {
+      "id": "Luc_2026-01_崩铁Saber_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/Luc_2026-01_%E5%B4%A9%E9%93%81Saber_001.jpg",
+      "localSrc": "/images/Luc_2026-01_%E5%B4%A9%E9%93%81Saber_001.jpg",
+      "fileName": "Luc_2026-01_崩铁Saber_001.jpg",
+      "category": "Luc",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "崩铁Saber"
+    },
+    {
+      "id": "香菇_2026-02_初音未来_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-02_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.jpg",
+      "localSrc": "/images/%E9%A6%99%E8%8F%87_2026-02_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.jpg",
+      "fileName": "香菇_2026-02_初音未来_001.jpg",
+      "category": "香菇",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "初音未来"
+    },
+    {
+      "id": "棍子_2026-02_兔子洞_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_001.jpg",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_001.jpg",
+      "fileName": "棍子_2026-02_兔子洞_001.jpg",
+      "category": "棍子",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "兔子洞"
+    },
+    {
+      "id": "棍子_2026-02_兔子洞_002.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_002.jpg",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%85%94%E5%AD%90%E6%B4%9E_002.jpg",
+      "fileName": "棍子_2026-02_兔子洞_002.jpg",
+      "category": "棍子",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "兔子洞"
+    },
+    {
+      "id": "棍子_2026-02_小埋_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-02_%E5%B0%8F%E5%9F%8B_001.jpg",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-02_%E5%B0%8F%E5%9F%8B_001.jpg",
+      "fileName": "棍子_2026-02_小埋_001.jpg",
+      "category": "棍子",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "小埋"
+    },
+    {
+      "id": "人中白_2026-01_大黑塔_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E4%BA%BA%E4%B8%AD%E7%99%BD_2026-01_%E5%A4%A7%E9%BB%91%E5%A1%94_001.webp",
+      "localSrc": "/images/%E4%BA%BA%E4%B8%AD%E7%99%BD_2026-01_%E5%A4%A7%E9%BB%91%E5%A1%94_001.webp",
+      "fileName": "人中白_2026-01_大黑塔_001.webp",
+      "category": "人中白",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "大黑塔"
+    },
+    {
+      "id": "棍子_2026-01_下江小春_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_001.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_001.webp",
+      "fileName": "棍子_2026-01_下江小春_001.webp",
+      "category": "棍子",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "下江小春"
+    },
+    {
+      "id": "棍子_2026-01_下江小春_002.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_002.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-01_%E4%B8%8B%E6%B1%9F%E5%B0%8F%E6%98%A5_002.webp",
+      "fileName": "棍子_2026-01_下江小春_002.webp",
+      "category": "棍子",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "下江小春"
+    },
+    {
+      "id": "香菇_2026-01_小埋_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E9%A6%99%E8%8F%87_2026-01_%E5%B0%8F%E5%9F%8B_001.webp",
+      "localSrc": "/images/%E9%A6%99%E8%8F%87_2026-01_%E5%B0%8F%E5%9F%8B_001.webp",
+      "fileName": "香菇_2026-01_小埋_001.webp",
+      "category": "香菇",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "小埋"
+    },
+    {
+      "id": "喜多_2026-04_时雨羽衣_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E6%97%B6%E9%9B%A8%E7%BE%BD%E8%A1%A3_001.webp",
+      "localSrc": "/images/%E5%96%9C%E5%A4%9A_2026-04_%E6%97%B6%E9%9B%A8%E7%BE%BD%E8%A1%A3_001.webp",
+      "fileName": "喜多_2026-04_时雨羽衣_001.webp",
+      "category": "喜多",
+      "month": "2026-04",
+      "date": "2026-04",
+      "role": "时雨羽衣"
+    },
+    {
+      "id": "喜多_2026-04_姬野_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E5%A7%AC%E9%87%8E_001.webp",
+      "localSrc": "/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%A7%AC%E9%87%8E_001.webp",
+      "fileName": "喜多_2026-04_姬野_001.webp",
+      "category": "喜多",
+      "month": "2026-04",
+      "date": "2026-04",
+      "role": "姬野"
+    },
+    {
+      "id": "棍子_2026-03_白兔_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-03_%E7%99%BD%E5%85%94_001.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-03_%E7%99%BD%E5%85%94_001.webp",
+      "fileName": "棍子_2026-03_白兔_001.webp",
+      "category": "棍子",
+      "month": "2026-03",
+      "date": "2026-03",
+      "role": "白兔"
+    },
+    {
+      "id": "喜多_2026-04_兔子洞_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-04_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp",
+      "localSrc": "/images/%E5%96%9C%E5%A4%9A_2026-04_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp",
+      "fileName": "喜多_2026-04_兔子洞_001.webp",
+      "category": "喜多",
+      "month": "2026-04",
+      "date": "2026-04",
+      "role": "兔子洞"
+    },
+    {
+      "id": "棍子_2025-12_橘望_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2025-12_%E6%A9%98%E6%9C%9B_001.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2025-12_%E6%A9%98%E6%9C%9B_001.webp",
+      "fileName": "棍子_2025-12_橘望_001.webp",
+      "category": "棍子",
+      "month": "2025-12",
+      "date": "2025-12",
+      "role": "橘望"
+    },
+    {
+      "id": "棍子_2025-10_丽塔_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2025-10_%E4%B8%BD%E5%A1%94_001.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2025-10_%E4%B8%BD%E5%A1%94_001.webp",
+      "fileName": "棍子_2025-10_丽塔_001.webp",
+      "category": "棍子",
+      "month": "2025-10",
+      "date": "2025-10",
+      "role": "丽塔"
+    },
+    {
+      "id": "宁梦_2025-08_佐仓双叶_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-08_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp",
+      "localSrc": "/images/%E5%AE%81%E6%A2%A6_2025-08_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp",
+      "fileName": "宁梦_2025-08_佐仓双叶_001.webp",
+      "category": "宁梦",
+      "month": "2025-08",
+      "date": "2025-08",
+      "role": "佐仓双叶"
+    },
+    {
+      "id": "宁梦_2025-05_早柚_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-05_%E6%97%A9%E6%9F%9A_001.webp",
+      "localSrc": "/images/%E5%AE%81%E6%A2%A6_2025-05_%E6%97%A9%E6%9F%9A_001.webp",
+      "fileName": "宁梦_2025-05_早柚_001.webp",
+      "category": "宁梦",
+      "month": "2025-05",
+      "date": "2025-05",
+      "role": "早柚"
+    },
+    {
+      "id": "宁梦_2025-08_兔子洞_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%AE%81%E6%A2%A6_2025-08_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp",
+      "localSrc": "/images/%E5%AE%81%E6%A2%A6_2025-08_%E5%85%94%E5%AD%90%E6%B4%9E_001.webp",
+      "fileName": "宁梦_2025-08_兔子洞_001.webp",
+      "category": "宁梦",
+      "month": "2025-08",
+      "date": "2025-08",
+      "role": "兔子洞"
+    },
+    {
+      "id": "xxd_2026-05_佐仓双叶_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2026-05_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp",
+      "localSrc": "/images/xxd_2026-05_%E4%BD%90%E4%BB%93%E5%8F%8C%E5%8F%B6_001.webp",
+      "fileName": "xxd_2026-05_佐仓双叶_001.webp",
+      "category": "xxd",
+      "month": "2025-05",
+      "date": "2025-05",
+      "role": "佐仓双叶"
+    },
+    {
+      "id": "xxd_2026-05_早柚_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2026-05_%E6%97%A9%E6%9F%9A_001.webp",
+      "localSrc": "/images/xxd_2026-05_%E6%97%A9%E6%9F%9A_001.webp",
+      "fileName": "xxd_2026-05_早柚_001.webp",
+      "category": "xxd",
+      "month": "2025-05",
+      "date": "2025-05",
+      "role": "早柚"
+    },
+    {
+      "id": "xxd_2025-03_MIO_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2025-03_MIO_001.webp",
+      "localSrc": "/images/xxd_2025-03_MIO_001.webp",
+      "fileName": "xxd_2025-03_MIO_001.webp",
+      "category": "xxd",
+      "month": "2025-03",
+      "date": "2025-03",
+      "role": "MIO"
+    },
+    {
+      "id": "xxd_2025-07_初音未来_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/xxd_2025-07_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.webp",
+      "localSrc": "/images/xxd_2025-07_%E5%88%9D%E9%9F%B3%E6%9C%AA%E6%9D%A5_001.webp",
+      "fileName": "xxd_2025-07_初音未来_001.webp",
+      "category": "xxd",
+      "month": "2025-07",
+      "date": "2025-07",
+      "role": "初音未来"
+    },
+    {
+      "id": "棍子_2026-07_飞鸟马时_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-07_%E9%A3%9E%E9%B8%9F%E9%A9%AC%E6%97%B6_001.jpg",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-07_%E9%A3%9E%E9%B8%9F%E9%A9%AC%E6%97%B6_001.jpg",
+      "fileName": "棍子_2026-07_飞鸟马时_001.jpg",
+      "category": "棍子",
+      "month": "2026-07",
+      "date": "2026-07",
+      "role": "飞鸟马时"
+    },
+    {
+      "id": "棍子_2026-01_才羽桃井_001.jpg",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E6%89%8D%E7%BE%BD%E6%A1%83%E4%BA%95_001.jpg",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%89%8D%E7%BE%BD%E6%A1%83%E4%BA%95_001.jpg",
+      "fileName": "棍子_2026-01_才羽桃井_001.jpg",
+      "category": "棍子",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "才羽桃井"
+    },
+    {
+      "id": "喜多_2026-02_深水雏子_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E5%96%9C%E5%A4%9A_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.webp",
+      "localSrc": "/images/%E5%96%9C%E5%A4%9A_2026-02_%E6%B7%B1%E6%B0%B4%E9%9B%8F%E5%AD%90_001.webp",
+      "fileName": "喜多_2026-02_深水雏子_001.webp",
+      "category": "喜多",
+      "month": "2026-02",
+      "date": "2026-02",
+      "role": "深水雏子"
+    },
+    {
+      "id": "棍子_2026-01_橘望_001.webp",
+      "src": "https://cdn.jsdelivr.net/gh/lx233/cos-album@main/%E6%A3%8D%E5%AD%90_2026-01_%E6%A9%98%E6%9C%9B_001.webp",
+      "localSrc": "/images/%E6%A3%8D%E5%AD%90_2026-01_%E6%A9%98%E6%9C%9B_001.webp",
+      "fileName": "棍子_2026-01_橘望_001.webp",
+      "category": "棍子",
+      "month": "2026-01",
+      "date": "2026-01",
+      "role": "橘望"
     }
   ],
   "migratedToImageList": true
